@@ -5,3 +5,11 @@ FROM vendor
 INNER JOIN location ON vendor.v_id = location.vendor_v_id
 INNER JOIN survey ON location.loc_id = survey.location_loc_id
 WHERE survey.surv_rating < 4;
+
+-- Show the most profitable locations and their cities during the month of July of 2021, sorted from highest to lowest
+SELECT location.loc_id AS ID, location.loc_city AS CITY, TO_CHAR(SUM(rec_sales), '$9,999,999') AS "Sales Sum" 
+FROM record
+INNER JOIN location ON record.location_loc_id = location.loc_id
+WHERE record.rec_date BETWEEN TO_DATE('07/01/2021', 'MM/DD/YYYY') AND TO_DATE('07/31/2021', 'MM/DD/YYYY')
+GROUP BY location.loc_id, location.loc_city
+ORDER BY "Sales Sum" DESC;
