@@ -1750,3 +1750,32 @@ INNER JOIN location ON record.location_loc_id = location.loc_id
 WHERE record.rec_date BETWEEN TO_DATE('07/01/2021', 'MM/DD/YYYY') AND TO_DATE('07/31/2021', 'MM/DD/YYYY')
 GROUP BY location.loc_id, location.loc_city
 ORDER BY "Sales Sum" DESC;
+
+
+--creates a loop which displays the first and last name of the employees with an emp_id under 20
+DECLARE
+ CURSOR cur_emp IS 
+ SELECT emp_first, emp_last FROM employee
+ WHERE emp_id <20;
+BEGIN
+  FOR L_IDX IN cur_emp
+  LOOP
+    DBMS_OUTPUT.PUT_LINE(L_IDX.emp_first||' '||L_IDX.emp_last);
+  END LOOP;
+END;
+
+--Creates an index to quicken up queries around the use of the store locations. answers in the master PDF
+CREATE INDEX storeLocation ON
+LOCATION(LOC_ID, LOC_CITY, LOC_ADDRESS);
+
+--when ran backwards all surveys for the locations within area_id = 14 with low surveys are displayed. (when ran normally the second output is the correct output)
+SELECT SURV_RATING, SURV_CUSTOMER_COMMENTS, LOCATION_LOC_ID
+FROM SURVEY
+WHERE SURV_RATING < (
+    SELECT AVG(SURV_RATING)
+    FROM SURVEY
+    WHERE LOCATION_LOC_ID IN (
+        SELECT LOC_ID
+        FROM LOCATION
+        WHERE AREA_AREA_ID = 14
+        ));
